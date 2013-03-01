@@ -1,2 +1,36 @@
 Application to allow on demand logging
 
+What does it do and what not:
+----------------------------
+a. ftee clones stdin to stdout and to a named pipe which allows so called on-demand logging which
+	is apparently usable in embedded aplications
+b. user can in some moment in time 'subscribe' to the log and see the process output
+	and then 'unsubscribe' when finished inspecting the log
+c. *only one* process can subscribe to the log
+c. most people might want to detach the terminal where the process was started, see below
+
+How to use it:
+---------------------------
+$ mkfifo /tmp/mylog
+$ ping www.google.com | ftee /tmp/mylog > /dev/null &
+$ cat /tmp/mylog
+
+The above: 
+a.	creates fifo to which we'll want to 'subscribe'
+b.	launches the process for which we want to log the stdout and 
+	pipes its output to ftee which in turn clones it to stdout and the named pipe.
+	In this example we get rid of the stdout by redirecting it to /dev/null and send 
+	the whole process into the background.
+c.	We subscribe to the log (^C to unsubscribe) - this works only for one process 'catting' on the fifo
+
+Rationale
+-------------------------
+This program was created in response to SO question by dronus here:
+http://stackoverflow.com/questions/7360473/linux-non-blocking-fifo-on-demand-logging/
+
+
+Improvements, comments?
+--------------------------
+https://github.com/racic/ftee
+racic@stackoverflow
+
